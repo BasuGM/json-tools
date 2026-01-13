@@ -140,7 +140,7 @@ This project is open source and available for portfolio demonstration.
 
 ## 👤 Contact
 
-**Your Name**
+**My Name**
 
 - LinkedIn: [Your LinkedIn](https://linkedin.com/in/your-profile)
 - Portfolio: [Your Portfolio](https://yourportfolio.com)
