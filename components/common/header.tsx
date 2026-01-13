@@ -1,8 +1,12 @@
 "use client";
 
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeToggle } from "@/components/common/theme-toggle";
 import { usePathname } from "next/navigation";
 
+/**
+ * Maps pathname to page title
+ * Returns dynamic title based on current route
+ */
 const getPageTitle = (pathname: string) => {
   const routes: Record<string, string> = {
     "/": "JSON Tools",
@@ -12,12 +16,26 @@ const getPageTitle = (pathname: string) => {
     "/diff": "JSON Diff Tool",
     "/cleanup": "JSON Cleanup Tool",
     "/analyzer": "JSON Size Analyzer",
+    "/minifier": "JSON Minifier",
     "/visualizer": "JSON Visualizer",
     "/json-to-xml": "JSON to XML",
   };
   return routes[pathname] || "JSON Tools";
 };
 
+/**
+ * Header - Sticky application header with dynamic page title
+ * 
+ * Features:
+ * - Sticky positioning at top of viewport
+ * - Dynamic title based on current route
+ * - Theme toggle button
+ * - Backdrop blur effect
+ * - Responsive layout
+ * - Home link on title
+ * 
+ * Updates automatically when navigating between pages.
+ */
 export function Header() {
   const pathname = usePathname();
   const title = getPageTitle(pathname);

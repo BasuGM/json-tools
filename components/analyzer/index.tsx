@@ -2,11 +2,14 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { JsonEditor } from "@/components/json-editor";
-import { StatusAlert } from "@/components/status-alert";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { JsonEditor } from "@/components/common/json-editor";
+import { StatusAlert } from "@/components/common/status-alert";
+import { SizeCard } from "./size-card";
+import { LargestPropertiesCard } from "./largest-properties-card";
 
+/**
+ * SizeInfo - JSON file size analysis results
+ */
 interface SizeInfo {
   totalBytes: number;
   totalKB: number;
@@ -18,98 +21,25 @@ interface SizeInfo {
   }>;
 }
 
-function SizeCard({ title, value, unit }: { title: string; value: string | number; unit?: string }) {
-  return (
-    <Card className="rounded-none">
-      <CardContent className="pt-6">
-        <div className="text-2xl font-bold">
-          {value}
-          {unit && <span className="text-sm font-normal ml-1 text-muted-foreground">{unit}</span>}
-        </div>
-        <div className="text-sm text-muted-foreground mt-1">{title}</div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function PropertySizeItem({ 
-  path, 
-  size, 
-  percentage, 
-  isLast,
-  formatBytes 
-}: { 
-  path: string; 
-  size: number; 
-  percentage: number; 
-  isLast: boolean;
-  formatBytes: (bytes: number) => string;
-}) {
-  return (
-    <div>
-      <div className="flex items-center justify-between">
-        <code className="text-sm font-mono bg-muted px-2 py-1">
-          {path}
-        </code>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">
-            {formatBytes(size)}
-          </span>
-          <span className="text-sm font-semibold text-primary">
-            {percentage.toFixed(1)}%
-          </span>
-        </div>
-      </div>
-      <div className="mt-2 h-2 bg-muted rounded-full overflow-hidden">
-        <div
-          className="h-full bg-primary"
-          style={{ width: `${Math.min(percentage, 100)}%` }}
-        />
-      </div>
-      {!isLast && <Separator className="mt-3" />}
-    </div>
-  );
-}
-
-function LargestPropertiesCard({ 
-  properties, 
-  formatBytes 
-}: { 
-  properties: Array<{ path: string; size: number; percentage: number }>;
-  formatBytes: (bytes: number) => string;
-}) {
-  if (properties.length === 0) return null;
-
-  return (
-    <Card className="rounded-none">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg">
-          Largest Properties
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {properties.map((prop, index) => (
-            <PropertySizeItem
-              key={index}
-              path={prop.path}
-              size={prop.size}
-              percentage={prop.percentage}
-              isLast={index === properties.length - 1}
-              formatBytes={formatBytes}
-            />
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
+/**
+ * AnalyzerPage - JSON Size Analyzer tool
+ * 
+ * Analyzes JSON files to provide insights on:
+ * - Total file size (bytes, KB, MB)
+ * - Number of properties
+ * - Minified size comparison
+ * - Top 10 largest properties with visual breakdown
+ * 
+ * Helps users optimize JSON payloads by identifying size hotspots.
+ */
 export default function AnalyzerPage() {
   const [input, setInput] = useState("");
   const [sizeInfo, setSizeInfo] = useState<SizeInfo | null>(null);
   const [error, setError] = useState("");
 
+  /**
+   * Recursively calculates the size of each property in the JSON object
+   */
   const calculateSize = (obj: any, path = ""): Array<{ path: string; size: number }> => {
     const sizes: Array<{ path: string; size: number }> = [];
     const jsonString = JSON.stringify(obj);
@@ -127,6 +57,9 @@ export default function AnalyzerPage() {
     return sizes;
   };
 
+  /**
+   * Analyzes the JSON input and calculates size metrics
+   */
   const handleAnalyze = () => {
     try {
       setError("");
@@ -149,6 +82,9 @@ export default function AnalyzerPage() {
           percentage: (item.size / totalBytes) * 100,
         }));
 
+      /**
+       * Recursively counts all properties in the JSON object
+       */
       const countProperties = (obj: any): number => {
         if (typeof obj !== "object" || obj === null) return 0;
         let count = Object.keys(obj).length;
@@ -170,12 +106,18 @@ export default function AnalyzerPage() {
     }
   };
 
+  /**
+   * Clears all input and results
+   */
   const handleClear = () => {
     setInput("");
     setSizeInfo(null);
     setError("");
   };
 
+  /**
+   * Formats byte count into human-readable format (B, KB, MB)
+   */
   const formatBytes = (bytes: number): string => {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
@@ -191,6 +133,7 @@ export default function AnalyzerPage() {
       </div>
 
       <div className="space-y-4">
+        {/* JSON input editor */}
         <JsonEditor
           label="JSON Input"
           value={input}
@@ -198,6 +141,7 @@ export default function AnalyzerPage() {
           height="350px"
         />
 
+        {/* Action buttons */}
         <div className="flex gap-2 items-center">
           <Button onClick={handleAnalyze} className="rounded-none">
             Analyze
@@ -213,8 +157,10 @@ export default function AnalyzerPage() {
           {error && <StatusAlert variant="error" message={error} />}
         </div>
 
+        {/* Analysis results */}
         {sizeInfo && (
           <div className="space-y-4">
+            {/* Size metric cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <SizeCard
                 title="Total Size"
@@ -230,6 +176,7 @@ export default function AnalyzerPage() {
               />
             </div>
 
+            {/* Largest properties breakdown */}
             <LargestPropertiesCard 
               properties={sizeInfo.largestProperties}
               formatBytes={formatBytes}

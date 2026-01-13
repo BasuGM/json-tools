@@ -4,6 +4,9 @@ import Editor from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import { Label } from "@/components/ui/label";
 
+/**
+ * JsonEditorProps - Props for the JsonEditor component
+ */
 interface JsonEditorProps {
   label?: string;
   value: string;
@@ -13,6 +16,20 @@ interface JsonEditorProps {
   language?: string;
 }
 
+/**
+ * JsonEditor - Monaco Editor wrapper with theme integration
+ * 
+ * Features:
+ * - Syntax highlighting for JSON and XML
+ * - Auto-syncs with app theme (light/dark)
+ * - Configurable height and language
+ * - Read-only mode support
+ * - Line numbers and word wrap enabled
+ * - No minimap for cleaner interface
+ * - Automatic layout adjustment
+ * 
+ * Used as the primary code editor throughout all JSON tools.
+ */
 export function JsonEditor({
   label,
   value,

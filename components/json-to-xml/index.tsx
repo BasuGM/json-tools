@@ -1,66 +1,56 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { JsonEditor } from "@/components/json-editor";
-import { StatusAlert } from "@/components/status-alert";
-import { Label } from "@/components/ui/label";
-import { CopyButton } from "@/components/copy-button";
+import { JsonEditor } from "@/components/common/json-editor";
+import { XmlOutputSection } from "./xml-output-section";
+import { ActionButtons } from "./action-buttons";
 
-function XmlOutputSection({ output }: { output: string }) {
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-2">
-        <Label>XML Output</Label>
-        <CopyButton textToCopy={output} />
-      </div>
-      <JsonEditor
-        value={output}
-        onChange={() => {}}
-        readOnly
-        height="350px"
-        language="xml"
-      />
-    </div>
-  );
-}
-
-function ActionButtons({
-  onConvert,
-  onClear,
-  error,
-}: {
-  onConvert: () => void;
-  onClear: () => void;
-  error: string;
-}) {
-  return (
-    <div className="flex gap-2 items-center">
-      <Button onClick={onConvert} className="rounded-none">
-        Convert to XML
-      </Button>
-      <Button onClick={onClear} variant="outline" className="rounded-none">
-        Clear
-      </Button>
-
-      {error && <StatusAlert variant="error" message={error} />}
-    </div>
-  );
-}
-
+/**
+ * JsonToXmlPage - JSON to XML Converter
+ * 
+ * Converts JSON data to XML format with proper structure:
+ * - XML declaration header (version 1.0, UTF-8)
+ * - Nested object conversion to XML elements
+ * - Array handling (repeated elements)
+ * - Null value handling (self-closing tags)
+ * - Automatic XML escaping for special characters (&, <, >, ", ')
+ * 
+ * Output is displayed in Monaco Editor with XML syntax highlighting.
+ */
 export default function JsonToXmlPage() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
 
+  /**
+   * Escapes special XML characters to prevent malformed output
+   */
+  const escapeXml = (str: string): string => {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
+  };
+
+  /**
+   * Converts JSON object to XML format
+   * Handles nested objects, arrays, primitives, and null values
+   */
   const jsonToXml = (obj: any, rootName = "root"): string => {
+    /**
+     * Recursively converts a value to XML with proper indentation
+     */
     const convertValue = (key: string, value: any, indent: string): string => {
       const nextIndent = indent + "  ";
 
+      // Handle null values as self-closing tags
       if (value === null) {
         return `${indent}<${key} />\n`;
       }
 
+      // Handle arrays: repeat element for each item
       if (Array.isArray(value)) {
         return value
           .map((item) => {
@@ -73,6 +63,7 @@ export default function JsonToXmlPage() {
           .join("");
       }
 
+      // Handle objects: nest child elements
       if (typeof value === "object") {
         const children = Object.entries(value)
           .map(([k, v]) => convertValue(k, v, nextIndent))
@@ -80,20 +71,14 @@ export default function JsonToXmlPage() {
         return `${indent}<${key}>\n${children}${indent}</${key}>\n`;
       }
 
+      // Handle primitives: wrap in element tags with escaped content
       return `${indent}<${key}>${escapeXml(String(value))}</${key}>\n`;
     };
 
-    const escapeXml = (str: string): string => {
-      return str
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&apos;");
-    };
-
+    // Start with XML declaration
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
 
+    // Convert root object
     if (typeof obj === "object" && obj !== null && !Array.isArray(obj)) {
       const children = Object.entries(obj)
         .map(([key, value]) => convertValue(key, value, "  "))
@@ -106,6 +91,10 @@ export default function JsonToXmlPage() {
     return xml;
   };
 
+  /**
+   * Converts the JSON input to XML and displays the result
+   * Validates JSON syntax before conversion
+   */
   const handleConvert = () => {
     try {
       setError("");
@@ -118,6 +107,9 @@ export default function JsonToXmlPage() {
     }
   };
 
+  /**
+   * Clears all inputs and results
+   */
   const handleClear = () => {
     setInput("");
     setOutput("");
@@ -126,6 +118,7 @@ export default function JsonToXmlPage() {
 
   return (
     <div className="container mx-auto max-w-6xl p-6">
+      {/* Page description */}
       <div className="mb-4">
         <p className="text-muted-foreground">
           Convert JSON data to XML format
@@ -133,6 +126,7 @@ export default function JsonToXmlPage() {
       </div>
 
       <div className="space-y-4">
+        {/* JSON input editor */}
         <JsonEditor
           label="JSON Input"
           value={input}
@@ -140,12 +134,14 @@ export default function JsonToXmlPage() {
           height="350px"
         />
 
+        {/* Action buttons and error display */}
         <ActionButtons
           onConvert={handleConvert}
           onClear={handleClear}
           error={error}
         />
 
+        {/* XML output section (shown after successful conversion) */}
         {output && <XmlOutputSection output={output} />}
       </div>
     </div>

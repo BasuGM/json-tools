@@ -1,111 +1,18 @@
-import Link from "next/link";
-import {
-  MdOutlineFormatAlignLeft,
-  MdOutlineCheckCircle,
-  MdCompareArrows,
-  MdCleaningServices,
-  MdOutlineAnalytics,
-  MdOutlineVisibility,
-  MdCode,
-} from "react-icons/md";
-import { AiOutlineSwap } from "react-icons/ai";
-import { Card } from "@/components/ui/card";
-import { IconType } from "react-icons";
+import { ToolCard } from "./tool-card";
+import { tools } from "./tools-data";
 
-interface Tool {
-  title: string;
-  description: string;
-  icon: IconType;
-  href: string;
-  color: string;
-}
-
-function ToolCard({ tool }: { tool: Tool }) {
-  const Icon = tool.icon;
-
-  return (
-    <Link href={tool.href}>
-      <Card className="hover:bg-accent hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer group p-4 rounded-none">
-        <div className="flex items-start gap-3">
-          <div className={`p-2 bg-muted ${tool.color} shrink-0`}>
-            <Icon className="w-5 h-5" />
-          </div>
-          <div className="space-y-1">
-            <h3 className="font-semibold text-base group-hover:text-primary transition-colors leading-tight">
-              {tool.title}
-            </h3>
-            <p className="text-sm text-muted-foreground leading-tight">
-              {tool.description}
-            </p>
-          </div>
-        </div>
-      </Card>
-    </Link>
-  );
-}
-
-const tools = [
-  {
-    title: "JSON Formatter / Beautifier",
-    description: "Format and beautify your JSON with proper indentation",
-    icon: MdOutlineFormatAlignLeft,
-    href: "/formatter",
-    color: "text-blue-500",
-  },
-  {
-    title: "JSON Validator",
-    description: "Validate your JSON syntax and structure",
-    icon: MdOutlineCheckCircle,
-    href: "/validator",
-    color: "text-green-500",
-  },
-  {
-    title: "JSON Diff Tool",
-    description: "Compare two JSON objects and find differences",
-    icon: MdCompareArrows,
-    href: "/diff",
-    color: "text-orange-500",
-  },
-  {
-    title: "JSON Visualizer",
-    description: "Visualize JSON data in a tree structure",
-    icon: MdOutlineVisibility,
-    href: "/visualizer",
-    color: "text-indigo-500",
-  },
-  {
-    title: "JSON Size Analyzer",
-    description: "Analyze and optimize JSON file size",
-    icon: MdOutlineAnalytics,
-    href: "/analyzer",
-    color: "text-pink-500",
-  },
-  {
-    title: "JSON Minifier",
-    description: "Minify and compress JSON data",
-    icon: AiOutlineSwap,
-    href: "/minifier",
-    color: "text-purple-500",
-  },
-  {
-    title: "JSON Cleanup Tool",
-    description: "Clean and optimize your JSON data",
-    icon: MdCleaningServices,
-    href: "/cleanup",
-    color: "text-cyan-500",
-  },
-  {
-    title: "JSON to XML",
-    description: "Convert JSON data to XML format",
-    icon: MdCode,
-    href: "/json-to-xml",
-    color: "text-amber-500",
-  },
-];
-
+/**
+ * HomePage - Main landing page component
+ * 
+ * Displays a grid of all available JSON tools with:
+ * - Centered header with title and subtitle
+ * - 2-column responsive grid (1 column on mobile, 2 on desktop)
+ * - Dynamically rendered tool cards from tools data
+ */
 export default function HomePage() {
   return (
     <div className="container mx-auto max-w-6xl p-6">
+      {/* Page header */}
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-bold mb-2">JSON Tools</h1>
         <p className="text-lg text-muted-foreground">
@@ -113,6 +20,7 @@ export default function HomePage() {
         </p>
       </div>
 
+      {/* Tools grid - responsive 1 or 2 columns */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {tools.map((tool) => (
           <ToolCard key={tool.href} tool={tool} />

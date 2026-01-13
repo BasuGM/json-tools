@@ -1,12 +1,28 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 
+/**
+ * StatusAlertProps - Props for the StatusAlert component
+ */
 interface StatusAlertProps {
   variant: "success" | "error";
   message: string;
   minWidth?: string;
 }
 
+/**
+ * StatusAlert - Inline status/error message with icon
+ * 
+ * Features:
+ * - Success variant (green) with checkmark icon
+ * - Error variant (red) with alert icon
+ * - Configurable minimum width
+ * - Compact height for inline display
+ * - Dark mode support
+ * - Rounded-none styling for consistency
+ * 
+ * Used to display validation results, error messages, and success confirmations.
+ */
 export function StatusAlert({ variant, message, minWidth = "min-w-md" }: StatusAlertProps) {
   const isSuccess = variant === "success";
 
