@@ -74,10 +74,17 @@ const tools = [
     color: "text-indigo-500",
   },
   {
-    title: "JSON ↔ JavaScript Object Converter",
-    description: "Convert between JSON and JavaScript objects",
+    title: "JSON Size Analyzer",
+    description: "Analyze and optimize JSON file size",
+    icon: MdOutlineAnalytics,
+    href: "/analyzer",
+    color: "text-pink-500",
+  },
+  {
+    title: "JSON Minifier",
+    description: "Minify and compress JSON data",
     icon: AiOutlineSwap,
-    href: "/converter",
+    href: "/minifier",
     color: "text-purple-500",
   },
   {
@@ -86,13 +93,6 @@ const tools = [
     icon: MdCleaningServices,
     href: "/cleanup",
     color: "text-cyan-500",
-  },
-  {
-    title: "JSON Size Analyzer",
-    description: "Analyze and optimize JSON file size",
-    icon: MdOutlineAnalytics,
-    href: "/analyzer",
-    color: "text-pink-500",
   },
   {
     title: "JSON to XML",

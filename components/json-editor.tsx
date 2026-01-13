@@ -10,6 +10,7 @@ interface JsonEditorProps {
   onChange?: (value: string) => void;
   readOnly?: boolean;
   height?: string;
+  language?: string;
 }
 
 export function JsonEditor({
@@ -18,6 +19,7 @@ export function JsonEditor({
   onChange,
   readOnly = false,
   height = "350px",
+  language = "json",
 }: JsonEditorProps) {
   const { theme } = useTheme();
 
@@ -27,7 +29,7 @@ export function JsonEditor({
       <div className="border rounded-none overflow-hidden">
         <Editor
           height={height}
-          defaultLanguage="json"
+          defaultLanguage={language}
           value={value}
           onChange={(value) => onChange?.(value || "")}
           theme={theme === "dark" ? "vs-dark" : "light"}
